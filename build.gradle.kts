@@ -10,6 +10,19 @@ version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gr
 
 // ---------------------------------------------------------------------------------------------------------------------
 
+val gitCommitHashProvider = if (!layout.projectDirectory.dir(".git").asFile.isDirectory) {
+	providers.provider { "unknown" }
+} else {
+	providers.exec {
+		commandLine("git", "rev-parse", "--verify", "--short", "HEAD")
+		isIgnoreExitValue = true
+	}.standardOutput.asText.map { output ->
+		output.trim().ifEmpty { "unknown" }
+	}
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 java {
 	/*
 	 * Show auto-detectable JDKs:
@@ -58,6 +71,17 @@ tasks.test {
 	useJUnitPlatform()
 
 	maxHeapSize = "1G"
+
+	jvmArgs(
+		"--enable-native-access=ALL-UNNAMED",  // for FFmpeg
+		"-DlibVersion=${version}"
+	)
+
+	jvmArgumentProviders.add(
+		CommandLineArgumentProvider {
+			listOf("-DgitCommit=${gitCommitHashProvider.get()}")
+		}
+	)
 
 	/*
 	 * testLogging based on
@@ -110,5 +134,53 @@ tasks.test {
 
 			override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) = Unit
 		})
+	}
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+val generatedSourcesDir = layout.buildDirectory.dir("generated/sources/libInfo/java")
+
+val generateLibInfo = tasks.register("generateLibInfo") {
+	val libVersion = project.version.toString()
+
+	inputs.property("libVersion", libVersion)
+	inputs.property("gitCommit", gitCommitHashProvider)
+	outputs.dir(generatedSourcesDir)
+
+	doLast {
+		val gitCommitHash = gitCommitHashProvider.get()
+		val outputDir = generatedSourcesDir.get().asFile.resolve("org/tsitle/lib_xrtxp")
+		outputDir.mkdirs()
+
+		outputDir.resolve("LibInfo.java").writeText(
+			"""
+			package org.tsitle.lib_xrtxp;
+
+			import java.util.Optional;
+
+			public final class LibInfo {
+				private static final String LIB_VERSION = "$libVersion";
+				private static final String GIT_COMMIT = "$gitCommitHash";
+
+				public static Optional<String> getLibVersion() {
+					if (LIB_VERSION.isBlank() || "null".equals(LIB_VERSION)) { return Optional.empty(); }
+					return Optional.of(LIB_VERSION);
+				}
+				public static Optional<String> getGitCommit() {
+					if (GIT_COMMIT.isBlank() || "null".equals(GIT_COMMIT)) { return Optional.empty(); }
+					return Optional.of(GIT_COMMIT);
+				}
+			}
+			""".trimIndent()
+		)
+	}
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir(generateLibInfo)
+		}
 	}
 }
