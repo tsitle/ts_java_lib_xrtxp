@@ -5,7 +5,7 @@ plugins {
 	id("java-library")
 }
 
-group = "org.tsitle"
+group = "io.github.tsitle"
 version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gradle.properties'
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -150,12 +150,12 @@ val generateLibInfo = tasks.register("generateLibInfo") {
 
 	doLast {
 		val gitCommitHash = gitCommitHashProvider.get()
-		val outputDir = generatedSourcesDir.get().asFile.resolve("org/tsitle/lib_xrtxp")
+		val outputDir = generatedSourcesDir.get().asFile.resolve("io/github/tsitle/lib_xrtxp")
 		outputDir.mkdirs()
 
 		outputDir.resolve("LibInfo.java").writeText(
 			"""
-			package org.tsitle.lib_xrtxp;
+			package io.github.tsitle.lib_xrtxp;
 
 			import java.util.Optional;
 
