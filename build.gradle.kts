@@ -60,15 +60,25 @@ tasks.test {
 		info.events = debug.events
 		info.exceptionFormat = debug.exceptionFormat
 
-		afterSuite(KotlinClosure2<TestDescriptor, TestResult, Unit>({ desc, result ->
-			if (desc.parent == null) {  // will match the outermost suite
-				val output = "Results: ${result.resultType} (${result.testCount} tests, ${result.successfulTestCount} passed, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
-				val startItem = "|  "
-				val endItem = "  |"
-				val repeatLength = startItem.length + output.length + endItem.length
-				println("\n" + ("-".repeat(repeatLength)) + "\n" + startItem + output + endItem + "\n" + ("-".repeat(repeatLength)))
+		addTestListener(object : TestListener {
+			override fun beforeSuite(suite: TestDescriptor) = Unit
+
+			override fun afterSuite(suite: TestDescriptor, result: TestResult) {
+				if (suite.parent == null) {  // will match the outermost suite
+					val output = "Results: ${result.resultType} " +
+							"(${result.testCount} tests, ${result.successfulTestCount} passed, " +
+							"${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+					val startItem = "|  "
+					val endItem = "  |"
+					val repeatLength = startItem.length + output.length + endItem.length
+					println("\n" + ("-".repeat(repeatLength)) + "\n" + startItem + output + endItem + "\n" + ("-".repeat(repeatLength)))
+				}
 			}
-		}))
+
+			override fun beforeTest(testDescriptor: TestDescriptor) = Unit
+
+			override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) = Unit
+		})
 	}
 }
 
