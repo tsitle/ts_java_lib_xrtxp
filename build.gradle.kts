@@ -22,11 +22,42 @@ java {
 	}*/
 }
 
+// ---------------------------------------------------------------------------------------------------------------------
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	// for Unit Tests
+	val depsVersionOrgJunitJunitBom = project.findProperty("depsVersionOrgJunitJunitBom")!! as String
+	testImplementation(platform("org.junit:junit-bom:${depsVersionOrgJunitJunitBom}"))
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+	//testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+
+	//
+	implementation("org.jspecify:jspecify:1.0.0")
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+tasks.compileJava {
+	options.javaModuleVersion = provider { version as String }
+}
+tasks.compileJava.configure {
+	options.encoding = "UTF-8"
+	options.compilerArgs.add("-Xlint:deprecation")
+}
+
 /*
  * see https://docs.gradle.org/current/userguide/java_testing.html
  */
 tasks.test {
 	useJUnitPlatform()
+
+	maxHeapSize = "1G"
 
 	/*
 	 * testLogging based on
@@ -79,45 +110,5 @@ tasks.test {
 
 			override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) = Unit
 		})
-	}
-}
-
-tasks.compileJava {
-	options.javaModuleVersion = provider { version as String }
-}
-tasks.compileJava.configure {
-	options.encoding = "UTF-8"
-	options.compilerArgs.add("-Xlint:deprecation")
-}
-
-// ---------------------------------------------------------------------------------------------------------------------
-
-repositories {
-	mavenCentral()
-}
-
-dependencies {
-	// for Unit Tests
-	val depsVersionOrgJunitJunitBom = project.findProperty("depsVersionOrgJunitJunitBom")!! as String
-	testImplementation(platform("org.junit:junit-bom:${depsVersionOrgJunitJunitBom}"))
-	testImplementation("org.junit.jupiter:junit-jupiter")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-	//testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
-
-	//
-	implementation("org.jspecify:jspecify:1.0.0")
-}
-
-/*
- * see https://docs.gradle.org/current/userguide/java_testing.html
- */
-tasks.test {
-	useJUnitPlatform()
-
-	maxHeapSize = "1G"
-
-	testLogging {
-		events("passed")
 	}
 }
