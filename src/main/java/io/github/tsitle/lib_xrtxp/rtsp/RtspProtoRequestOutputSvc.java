@@ -703,6 +703,32 @@ public final class RtspProtoRequestOutputSvc {
 				@NonNull String resourceUrl
 			) throws TcpSocketClosedException, TcpSocketIoException, TcpSocketActivityTimeoutException,
 				RtspProtoSendRequestFailedException {
+		RtspProtoClientCredentials dummyClientCredentials = RtspProtoClientCredentials.ofEmpty();
+
+		return sendRequest_srtxpInitialOutboundSdes(
+				resourceUrl,
+				dummyClientCredentials
+			);
+	}
+
+	/**
+	 * Send the initial Key Management Data (KMD) using the legacy SDES format for SRTP/SRTCP to the server.<br />
+	 * This will issue an ANNOUNCE request.<br />
+	 * <b>Note:</b> This can only work if the server supports the legacy SDES format and ANNOUNCE.<br />
+	 * <b>Note:</b> This is only allowed for Client->Server requests.
+	 * @param resourceUrl The Resource URL
+	 * @param clientCredentials Client credentials (can be empty)
+	 * @return The message type that was sent
+	 * @throws TcpSocketClosedException If the TCP socket is closed
+	 * @throws TcpSocketIoException If an I/O error occurs
+	 * @throws TcpSocketActivityTimeoutException If the TCP socket activity timeout has been reached
+	 * @throws RtspProtoSendRequestFailedException If the sending the request has failed
+	 */
+	public @NonNull RtspProtoMessageType sendRequest_srtxpInitialOutboundSdes(
+				@NonNull String resourceUrl,
+				@NonNull RtspProtoClientCredentials clientCredentials
+			) throws TcpSocketClosedException, TcpSocketIoException, TcpSocketActivityTimeoutException,
+				RtspProtoSendRequestFailedException {
 		final String FNC_NAME = getClass().getSimpleName() + ".sendRequest_srtxpInitialOutboundSdes()";
 
 		if (! isRequestFromClient) {
@@ -712,8 +738,6 @@ public final class RtspProtoRequestOutputSvc {
 		RtspProtoDataRequest inputDataRequ = new RtspProtoDataRequest();
 		inputDataRequ.rrRscUrl.setUrlStr(resourceUrl);
 
-		RtspProtoClientCredentials dummyClientCredentials = RtspProtoClientCredentials.ofEmpty();
-
 		InternRequArgs internRequArgs = new InternRequArgs(inputDataRequ);
 		internRequArgs.kmdsOutboundForAnnounceSetParam = null;
 		internRequArgs.announceFromClientGenerateLegacySdesKmds = true;
@@ -721,7 +745,7 @@ public final class RtspProtoRequestOutputSvc {
 		return internalSendRequest(
 				FNC_NAME,
 				RtspProtoMessageType.ANNOUNCE,
-				dummyClientCredentials,
+				clientCredentials,
 				internRequArgs
 			);
 	}
