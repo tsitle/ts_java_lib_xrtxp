@@ -3,6 +3,8 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
 	id("java-library")
+	id("maven-publish")
+	id("org.jreleaser") version "1.27.0"
 }
 
 group = "io.github.tsitle"
@@ -33,6 +35,9 @@ java {
 	/*toolchain {
 		languageVersion.set(JavaLanguageVersion.of(25))
 	}*/
+
+	withJavadocJar()
+	withSourcesJar()
 }
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -180,6 +185,69 @@ sourceSets {
 	main {
 		java {
 			srcDir(generateLibInfo)
+		}
+	}
+}
+
+// ---------------------------------------------------------------------------------------------------------------------
+
+publishing {
+	publications {
+		create<MavenPublication>("maven") {
+			groupId = "io.github.tsitle"
+			artifactId = "ts_lib_xrtxp"
+
+			from(components["java"])
+
+			pom {
+				name.set("TS Lib XRTXP")
+				description.set("Java Library for RTSP, (S)RTP and (S)RTCP")
+				url.set("https://github.com/tsitle/ts_java_lib_xrtxp")
+				inceptionYear.set("2026")
+				licenses {
+					license {
+						name.set("Apache-2.0")
+						url.set("https://spdx.org/licenses/Apache-2.0.html")
+					}
+				}
+				developers {
+					developer {
+						id.set("tsitle")
+						name.set("TSITLE")
+					}
+				}
+				scm {
+					connection.set("scm:git:https://github.com/tsitle/ts_java_lib_xrtxp.git")
+					developerConnection.set("scm:git:git@github.com:tsitle/ts_java_lib_xrtxp.git")
+					url.set("https://github.com/tsitle/ts_java_lib_xrtxp")
+				}
+			}
+		}
+	}
+
+	repositories {
+		maven {
+			url = uri(layout.buildDirectory.dir("staging-deploy"))
+		}
+	}
+}
+
+jreleaser {
+	signing {
+		pgp {
+			active.set(org.jreleaser.model.Active.ALWAYS)
+			armored.set(true)
+		}
+	}
+	deploy {
+		maven {
+			mavenCentral {
+				create("sonatype") {
+					active.set(org.jreleaser.model.Active.ALWAYS)
+					url.set("https://central.sonatype.com/api/v1/publisher")
+					stagingRepository("build/staging-deploy")
+				}
+			}
 		}
 	}
 }
