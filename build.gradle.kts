@@ -10,16 +10,16 @@ version = "${project.findProperty("libVersion")}"  // read 'libVersion' from 'gr
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-val gitCommitHashProvider = if (!layout.projectDirectory.dir(".git").asFile.isDirectory) {
-	providers.provider { "unknown" }
-} else {
-	providers.exec {
-		commandLine("git", "rev-parse", "--verify", "--short", "HEAD")
-		isIgnoreExitValue = true
-	}.standardOutput.asText.map { output ->
-		output.trim().ifEmpty { "unknown" }
+val gitCommitHashProvider = if (! layout.projectDirectory.dir(".git").asFile.isDirectory) {
+		providers.provider { "unknown" }
+	} else {
+		providers.exec {
+			commandLine("git", "rev-parse", "--verify", "--short", "HEAD")
+			isIgnoreExitValue = true
+		}.standardOutput.asText.map { output ->
+			output.trim().ifEmpty { "unknown" }
+		}
 	}
-}
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -140,6 +140,7 @@ tasks.test {
 val generatedSourcesDir = layout.buildDirectory.dir("generated/sources/libInfo/java")
 
 val generateLibInfo = tasks.register("generateLibInfo") {
+	description = "Generates LibInfo.java"
 	val libVersion = project.version.toString()
 
 	inputs.property("libVersion", libVersion)
