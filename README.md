@@ -14,7 +14,7 @@ If you're using Maven as build tool, include it in your `pom.xml` like so:
 	<dependency>
 		<groupId>io.github.tsitle</groupId>
 		<artifactId>ts_lib_xrtxp</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.3</version>
 	</dependency>
 </dependencies>
 ```
@@ -24,7 +24,7 @@ Or, if you're using Gradle with the Groovy DSL, add this to your `build.gradle`:
 ``` groovy
 dependencies {
 	/* ... */
-	implementation 'io.github.tsitle:ts_lib_xrtxp:1.2.2'
+	implementation 'io.github.tsitle:ts_lib_xrtxp:1.2.3'
 }
 ```
 
@@ -33,6 +33,6 @@ Or, if you're using Gradle with the Kotlin DSL, add this to your `build.gradle.k
 ``` kotlin
 dependencies {
 	/* ... */
-	implementation("io.github.tsitle:ts_lib_xrtxp:1.2.2")
+	implementation("io.github.tsitle:ts_lib_xrtxp:1.2.3")
 }
 ```
