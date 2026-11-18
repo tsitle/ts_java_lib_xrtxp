@@ -409,11 +409,15 @@ public final class RtspProtoRequestInputSvc {
 		if (dataRequ.rrStreamTpMain.getRtpRtcpEncryptionRequired()) {  // only update one-way
 			sessionInfoPtr.ptr().setStreamTpMainRtpRtcpEncryptionRequired();
 		}
-		if (dataRequ.rrStreamTpMain.getIsTransportUdp()) {  // only update one-way
-			sessionInfoPtr.ptr().setStreamTpMainIsTransportUdp();
+		if (dataRequ.rrStreamTpMain.getIsTransportUdp()) {
+			sessionInfoPtr.ptr().setStreamTpMainIsTransportUdp();  // this could be problematic if not all sub-streams use the same transport
+		} else {
+			sessionInfoPtr.ptr().setStreamTpMainIsTransportTcp();  // dito
 		}
-		if (dataRequ.rrStreamTpMain.getIsTransportSrtpSrtcp()) {  // only update one-way
-			sessionInfoPtr.ptr().setStreamTpMainIsTransportSrtpSrtcp();
+		if (dataRequ.rrStreamTpMain.getIsTransportSrtpSrtcp()) {
+			sessionInfoPtr.ptr().setStreamTpMainIsTransportSrtxp();  // this could be problematic if not all sub-streams use SRTxP
+		} else {
+			sessionInfoPtr.ptr().setStreamTpMainIsTransportNoSrtxp();  // dito
 		}
 		//
 		sessionInfoPtr.ptr().setDescrSetupInfosStream(setupInfosStream);

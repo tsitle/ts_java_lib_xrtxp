@@ -760,12 +760,8 @@ public final class RtspProtoHighRequestConsumer {
 		tmpSiSsPtr.getSubStreamTpPtr().copyFrom(tmpInpSsTp);
 
 		// update main stream transport settings
-		if (tmpSiSsPtr.getSubStreamTpPtr().getIsUdp()) {  // only update one-way
-			ioStreamTpMain.setIsTransportUdp(true);
-		}
-		if (tmpSiSsPtr.getSubStreamTpPtr().getIsEncr()) {  // only update one-way
-			ioStreamTpMain.setIsTransportSrtpSrtcp(true);
-		}
+		ioStreamTpMain.setIsTransportUdp(tmpSiSsPtr.getSubStreamTpPtr().getIsUdp());  // this could be problematic if not all sub-streams use the same transport
+		ioStreamTpMain.setIsTransportSrtpSrtcp(tmpSiSsPtr.getSubStreamTpPtr().getIsEncr());  // this could be problematic if not all sub-streams use SRTxP
 	}
 
 	private void processHeader_com_useragent(

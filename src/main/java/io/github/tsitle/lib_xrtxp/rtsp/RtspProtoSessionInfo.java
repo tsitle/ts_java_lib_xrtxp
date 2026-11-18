@@ -778,10 +778,18 @@ public final class RtspProtoSessionInfo {
 			theWriteLockFields.unlock();
 		}
 	}
-	void setStreamTpMainIsTransportSrtpSrtcp() {
+	void setStreamTpMainIsTransportSrtxp() {
 		theWriteLockFields.lock();
 		try {
 			streamTpMain.setIsTransportSrtpSrtcp(true);
+		} finally {
+			theWriteLockFields.unlock();
+		}
+	}
+	void setStreamTpMainIsTransportNoSrtxp() {
+		theWriteLockFields.lock();
+		try {
+			streamTpMain.setIsTransportSrtpSrtcp(false);
 		} finally {
 			theWriteLockFields.unlock();
 		}

@@ -310,7 +310,7 @@ public final class RtspProtoResponseInputSvc {
 			for (RtspProtoIdSubStream tmpMeCtrlId : tmpMeCtrlIdsOutput) {
 				Optional<RtspProtoSetupInfoForSubStream> tmpOptSiForSsPtr = tmpSis.getSiPtrBySubStreamId(tmpMeCtrlId);
 				if (tmpOptSiForSsPtr.isPresent() && tmpOptSiForSsPtr.get().getSubStreamTpPtr().getIsEncr()) {
-					sessionInfoPtr.ptr().setStreamTpMainIsTransportSrtpSrtcp();
+					sessionInfoPtr.ptr().setStreamTpMainIsTransportSrtxp();
 					break;
 				}
 			}
